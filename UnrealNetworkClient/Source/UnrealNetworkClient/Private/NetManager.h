@@ -18,7 +18,7 @@ public:
 	~ANetManager();
 
 	static TArray<UNetworkGameObject*> localNetObjects; //this line here!
-
+	static float timePastSinceBeginPlay;
 	//declare a bunch of variables we’ll be using in the .cpp. Normally you’d switch back to the header file and add as you go, but we’ll define them up-front.
 
 	//notice the similarity in the types with the C# implementation. Primarily, we need a socket and endpoints, and arrays for data
@@ -27,7 +27,7 @@ public:
 	// Local Endpoint
 	FString SocketDescription = "UDP Listen Socket";
 	FIPv4Endpoint LocalEndpoint;
-	uint16 LocalPort = 9051;
+	uint16 LocalPort = 0; //so the port is automatically assigned
 	int32 SendSize;
 	TArray<uint8> ReceivedData;
 
@@ -43,10 +43,13 @@ public:
 	//the methods we’ll use are similar to Unity’s Start (BeginPlay()) and Update (Tick()). We’ll also declare a method to listen to the socket for inbound data.
 
 protected:
+	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
+	static ANetManager* singleton; //declare the class to contain a pointer to an instance of itself
+
 	virtual void Tick(float DeltaTime) override;
 
 	void Listen();
@@ -57,5 +60,6 @@ public:
 
 	void messageQueue();
 
+	void AddNetObject(UNetworkGameObject* component);
 
 };

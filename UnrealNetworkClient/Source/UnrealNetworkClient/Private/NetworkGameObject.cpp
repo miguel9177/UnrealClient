@@ -17,17 +17,19 @@ UNetworkGameObject::UNetworkGameObject()
 	// ...
 }
 
-
 // Called when the game starts
 void UNetworkGameObject::BeginPlay()
 {
+	ANetManager::singleton->AddNetObject(this); //calls the above method on the singleton network manager
 	Super::BeginPlay();
 	if (isLocallyOwned) {
 		localId = lastLocalID;
 		lastLocalID++;
-		ANetManager::localNetObjects.Add(this);
-		UE_LOG(LogTemp, Warning, TEXT("count: %d"), ANetManager::localNetObjects.Num());
+		
 	}	
+
+
+	UE_LOG(LogTemp, Warning, TEXT("count: %d"), ANetManager::localNetObjects.Num());
 }
 
 
@@ -37,6 +39,11 @@ void UNetworkGameObject::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+bool UNetworkGameObject::GetIsLocallyOwned()
+{
+	return isLocallyOwned;
 }
 
 int32 UNetworkGameObject::GetGlobalID() {

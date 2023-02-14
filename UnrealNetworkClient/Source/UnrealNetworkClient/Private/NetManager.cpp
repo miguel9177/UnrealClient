@@ -5,6 +5,9 @@
 #include <string>
 
 TArray<UNetworkGameObject*> ANetManager::localNetObjects;
+ANetManager* ANetManager::singleton; //declare the pointer
+float ANetManager::timePastSinceBeginPlay = 0;
+
 
 // Sets default values
 ANetManager::ANetManager()
@@ -18,11 +21,13 @@ ANetManager::~ANetManager()
 
 }
 
-// Called when the game starts or when spawned
-void ANetManager::BeginPlay()
+void ANetManager::PostInitializeComponents()
 {
+	Super::PostInitializeComponents();
+	
+	if (singleton == nullptr) singleton = this; //if it’s null, it becomes the current instance
+
 	UE_LOG(LogTemp, Warning, TEXT("Hello"));
-	Super::BeginPlay();
 	SocketSubsystem = nullptr;
 	//more macro code. We’re using Unreal’s low level generic networking (as opposed to it’s higher level game-oriented solution).
 	if (SocketSubsystem == nullptr)	SocketSubsystem = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
@@ -64,6 +69,12 @@ void ANetManager::BeginPlay()
 
 }
 
+// Called when the game starts or when spawned
+void ANetManager::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void ANetManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
@@ -71,7 +82,7 @@ void ANetManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	SocketSubsystem->DestroySocket(Socket);
 	Socket = nullptr;
 	SocketSubsystem = nullptr;
-
+	singleton = nullptr; //it becomes null for next time we play (otherwise it’ll point to the previously destroyed version from the last session
 }
 
 // Called every frame
@@ -79,11 +90,18 @@ void ANetManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//Super::Tick(DeltaTime);
+	timePastSinceBeginPlay += DeltaTime;
 
-	for (UNetworkGameObject* netObject : ANetManager::localNetObjects) {
-		if (netObject->GetGlobalID() == 0) {
+
+	for (UNetworkGameObject* netObject : ANetManager::localNetObjects) 
+	{
+		float timePassedSinceRequestingId = netObject->requestedIdInfo.timeIdWasRequested - timePastSinceBeginPlay;
+		if (netObject->GetGlobalID() == 0 && (netObject->requestedIdInfo.requestedId == false || timePassedSinceRequestingId < -5))
+		{
 			FString t = "I need a UID for local object:" + FString::FromInt(netObject->GetLocalID());
 			sendMessage(t);
+			netObject->requestedIdInfo.requestedId = true;
+			netObject->requestedIdInfo.timeIdWasRequested = timePastSinceBeginPlay;
 		}
 	}
 
@@ -107,7 +125,7 @@ void ANetManager::Listen()
 		ReceivedData.SetNumUninitialized(FMath::Min(Size, 65507u));
 		Socket->RecvFrom(ReceivedData.GetData(), ReceivedData.Num(), BytesRead, *targetAddr);
 
-		char ansiiData[1024];
+		char ansiiData[4096];
 		memcpy(ansiiData, ReceivedData.GetData(), BytesRead);
 		ansiiData[BytesRead] = 0;
 
@@ -174,5 +192,14 @@ bool ANetManager::sendMessage(FString Message)
 
 void ANetManager::messageQueue()
 {
+}
+
+void ANetManager::AddNetObject(UNetworkGameObject* component) {
+	ANetManager::localNetObjects.Add(component);
+	if ((component->GetGlobalID() == 0 && (component->requestedIdInfo.requestedId == false || -5 < (component->requestedIdInfo.timeIdWasRequested - timePastSinceBeginPlay))) && (component->GetIsLocallyOwned())) {
+		FString t = "I need a UID for local object:" + FString::FromInt(component->GetLocalID());
+		sendMessage(t);
+		component->requestedIdInfo.requestedId = true;
+	}
 }
 

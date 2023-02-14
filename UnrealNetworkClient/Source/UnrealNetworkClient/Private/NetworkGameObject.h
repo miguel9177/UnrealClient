@@ -18,13 +18,19 @@ class UNetworkGameObject : public UActorComponent
 	UPROPERTY(VisibleAnywhere)
 	int32 localId;
 
-
+	struct RequestedId 
+	{
+		bool requestedId = false;
+		float timeIdWasRequested = 0;
+	};
 public:	
 	static int32 lastLocalID;
+	RequestedId requestedIdInfo;
 
 	// Sets default values for this component's properties
 	UNetworkGameObject();
 
+	bool GetIsLocallyOwned();
 	int32 GetGlobalID();
 	int32 GetLocalID();
 	void SetGlobalID(int32 gId);
