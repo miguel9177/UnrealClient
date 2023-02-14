@@ -13,9 +13,15 @@ class UNetworkGameObject : public UActorComponent
 	GENERATED_BODY() //up to here code should be the same
 	UPROPERTY(EditAnywhere)
 	bool isLocallyOwned;
+	UPROPERTY(VisibleAnywhere)
+	int32 globalId;
+	UPROPERTY(VisibleAnywhere)
+	int32 localId;
 
 
 public:	
+	static int32 lastLocalID;
+
 	// Sets default values for this component's properties
 	UNetworkGameObject();
 

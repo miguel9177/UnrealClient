@@ -4,6 +4,8 @@
 #include "NetManager.h"
 #include <string>
 
+TArray<UNetworkGameObject*> ANetManager::localNetObjects;
+
 // Sets default values
 ANetManager::ANetManager()
 {
@@ -65,6 +67,7 @@ void ANetManager::BeginPlay()
 void ANetManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+	ANetManager::localNetObjects.Empty();
 	SocketSubsystem->DestroySocket(Socket);
 	Socket = nullptr;
 	SocketSubsystem = nullptr;

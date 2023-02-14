@@ -2,6 +2,8 @@
 
 
 #include "NetworkGameObject.h"
+#include "NetManager.h"
+int32 UNetworkGameObject::lastLocalID = 0;
 
 // Sets default values for this component's properties
 UNetworkGameObject::UNetworkGameObject()
@@ -20,9 +22,12 @@ UNetworkGameObject::UNetworkGameObject()
 void UNetworkGameObject::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
+	if (isLocallyOwned) {
+		localId = lastLocalID;
+		lastLocalID++;
+		ANetManager::localNetObjects.Add(this);
+		UE_LOG(LogTemp, Warning, TEXT("count: %d"), ANetManager::localNetObjects.Num());
+	}	
 }
 
 
