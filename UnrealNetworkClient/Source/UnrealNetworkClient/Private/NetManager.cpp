@@ -80,10 +80,17 @@ void ANetManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	//Super::Tick(DeltaTime);
 
+	for (UNetworkGameObject* netObject : ANetManager::localNetObjects) {
+		if (netObject->GetGlobalID() == 0) {
+			FString t = "I need a UID for local object:" + FString::FromInt(netObject->GetLocalID());
+			sendMessage(t);
+		}
+	}
+
 	Listen(); // Listen for messages
 
-	FString t = "I'm an Unreal client!";
-	sendMessage(t); // Send Message Test
+	//FString t = "I'm an Unreal client!";
+	//sendMessage(t); // Send Message Test
 
 
 }
@@ -94,7 +101,6 @@ void ANetManager::Listen()
 	uint32 Size;
 	if (Socket->HasPendingData(Size))
 	{
-		
 		uint8* Recv = new uint8[Size];
 		int32 BytesRead = 0;
 
@@ -108,6 +114,38 @@ void ANetManager::Listen()
 		FString data = ANSI_TO_TCHAR(ansiiData);
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Message by UDP: " + data);
+
+		if (data.Contains("Assigned UID:")) 
+		{
+
+			FString message, info;
+			//split off the 'Assigned UID:' bit, by delimiting at the :
+			if (data.Split(TEXT(":"), &message, &info)) 
+			{
+				FString lid, gid;
+				//split into local and global ID, by delimiting at the ;
+				if (info.Split(TEXT(";"), &lid, &gid)) 
+				{
+					//the Atoi function is the equivalent of Int32.Parse in C#, converting a string to an int32
+					int32 intGlobalID = FCString::Atoi(*gid);
+					int32 intLocalID = FCString::Atoi(*lid);
+
+					//iterate netObjects, find the one the local ID corresponds to, and assign the global ID
+					for (UNetworkGameObject* netObject : ANetManager::localNetObjects) 
+					{
+						if (netObject->GetLocalID() == intLocalID) 
+						{
+							netObject->SetGlobalID(intGlobalID);
+							UE_LOG(LogTemp, Warning, TEXT("Assigned: %d"), intGlobalID);
+						}
+
+					}
+
+				}
+			}
+
+		}
+
 	}
 	//while (Socket->HasPendingData(Size))
 		//{

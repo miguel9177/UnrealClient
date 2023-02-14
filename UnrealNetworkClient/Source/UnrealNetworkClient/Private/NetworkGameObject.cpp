@@ -39,3 +39,20 @@ void UNetworkGameObject::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	// ...
 }
 
+int32 UNetworkGameObject::GetGlobalID() {
+	return globalId;
+}
+
+int32 UNetworkGameObject::GetLocalID() {
+	return localId;
+}
+
+void UNetworkGameObject::SetGlobalID(int32 gid) {
+	globalId = gid;
+}
+
+void UNetworkGameObject::SetLocalID(int32 lid) {
+	localId = lid;
+}
+
+

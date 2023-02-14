@@ -25,6 +25,12 @@ public:
 	// Sets default values for this component's properties
 	UNetworkGameObject();
 
+	int32 GetGlobalID();
+	int32 GetLocalID();
+	void SetGlobalID(int32 gId);
+	void SetLocalID(int32 lId);
+
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
