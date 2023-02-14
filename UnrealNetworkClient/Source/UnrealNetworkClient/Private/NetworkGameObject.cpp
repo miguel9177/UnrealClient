@@ -62,4 +62,39 @@ void UNetworkGameObject::SetLocalID(int32 lid) {
 	localId = lid;
 }
 
+FString UNetworkGameObject::ToPacket() {
+	AActor* parentActor = GetOwner();
+	FVector position = parentActor->GetActorLocation();
+	FRotator rotation = parentActor->GetActorRotation(); //unreal uses euler angles..
+	FQuat quaternionRotation = FQuat(rotation); //so we have to convert to Quaternion for Unity consistence
+
+	FString returnVal = FString::Printf(TEXT("Object data;%i;%f;%f;%f;%f;%f;%f;%f"), globalId,
+		position.X,
+		position.Y,
+		position.Z,
+		quaternionRotation.X,
+		quaternionRotation.Y,
+		quaternionRotation.Z,
+		quaternionRotation.W
+	);
+	return returnVal;
+}
+
+int32 UNetworkGameObject::GlobalIDFromPacket(FString packet) {
+	TArray<FString> parsed;
+	packet.ParseIntoArray(parsed, TEXT(";"), false);
+	return FCString::Atoi(*parsed[1]);
+}
+
+void UNetworkGameObject::FromPacket(FString packet) { //returns global id
+	TArray<FString> parsed;
+	packet.ParseIntoArray(parsed, TEXT(";"), false);
+	AActor* parentActor = GetOwner();
+	FVector position = FVector(FCString::Atof(*parsed[2]), FCString::Atof(*parsed[3]), FCString::Atof(*parsed[4]));
+	FQuat rotation = FQuat(FCString::Atof(*parsed[5]), FCString::Atof(*parsed[6]), FCString::Atof(*parsed[7]), FCString::Atof(*parsed[8]));
+	parentActor->SetActorLocation(position);
+	parentActor->SetActorRotation(rotation);
+
+}
+
 

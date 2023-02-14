@@ -30,11 +30,15 @@ public:
 	// Sets default values for this component's properties
 	UNetworkGameObject();
 
-	bool GetIsLocallyOwned();
 	int32 GetGlobalID();
 	int32 GetLocalID();
+	bool GetIsLocallyOwned();
 	void SetGlobalID(int32 gId);
 	void SetLocalID(int32 lId);
+	void FromPacket(FString packet);
+	FString ToPacket();
+	int32 GlobalIDFromPacket(FString packet);
+
 
 
 protected:

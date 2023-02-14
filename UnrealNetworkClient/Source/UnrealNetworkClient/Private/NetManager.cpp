@@ -103,6 +103,10 @@ void ANetManager::Tick(float DeltaTime)
 			netObject->requestedIdInfo.requestedId = true;
 			netObject->requestedIdInfo.timeIdWasRequested = timePastSinceBeginPlay;
 		}
+		if (netObject->GetIsLocallyOwned() && netObject->GetGlobalID() != 0) {
+			UE_LOG(LogTemp, Warning, TEXT("Sending: %s"), *netObject->ToPacket());
+			sendMessage(netObject->ToPacket());
+		}
 	}
 
 	Listen(); // Listen for messages
