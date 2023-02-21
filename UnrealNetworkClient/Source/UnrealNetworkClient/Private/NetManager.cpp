@@ -92,7 +92,6 @@ void ANetManager::Tick(float DeltaTime)
 	//Super::Tick(DeltaTime);
 	timePastSinceBeginPlay += DeltaTime;
 
-
 	for (UNetworkGameObject* netObject : ANetManager::localNetObjects) 
 	{
 		float timePassedSinceRequestingId = netObject->requestedIdInfo.timeIdWasRequested - timePastSinceBeginPlay;
@@ -167,6 +166,29 @@ void ANetManager::Listen()
 			}
 
 		}
+		else if (data.Contains("Object data;")) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("parsing state data"));
+			bool foundActor = false;
+			for (UNetworkGameObject* netObject : ANetManager::localNetObjects) {
+				if (netObject->GetGlobalID() == netObject->GlobalIDFromPacket(data)) {
+					if (!netObject->GetIsLocallyOwned()) {
+						netObject->FromPacket(data);
+					}
+					foundActor = true;
+				}
+			}
+
+			if (!foundActor) {
+				UE_LOG(LogTemp, Warning, TEXT("spawning"));
+				AActor* actor = GetWorld()->SpawnActor<AActor>(OtherPlayerAvatars, FVector::ZeroVector, FRotator::ZeroRotator);
+				UNetworkGameObject* netActor = actor->FindComponentByClass<UNetworkGameObject>();
+				netActor->SetGlobalID(netActor->GlobalIDFromPacket(data));
+				netActor->FromPacket(data);
+			}
+
+		}
+
 
 	}
 	//while (Socket->HasPendingData(Size))

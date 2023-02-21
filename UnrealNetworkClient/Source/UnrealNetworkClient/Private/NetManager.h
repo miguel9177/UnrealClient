@@ -12,6 +12,8 @@ UCLASS()
 class ANetManager : public AActor
 {
 	GENERATED_BODY()
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> OtherPlayerAvatars;
 
 public:
 	ANetManager();
@@ -36,7 +38,7 @@ public:
 	FIPv4Address RemoteAddress;
 	uint16 RemotePort = 9050;
 	int32 BufferSize;
-	FString IP = "10.1.23.5";
+	FString IP = "10.1.32.70";
 
 	ISocketSubsystem* SocketSubsystem;
 
