@@ -87,9 +87,9 @@ int32 UNetworkGameObject::GlobalIDFromPacket(FString packet) {
 }
 
 void UNetworkGameObject::FromPacket(FString packet) { //returns global id
-	packet = packet.Replace(TEXT(","), TEXT("."));
 	TArray<FString> parsed;
 	packet.ParseIntoArray(parsed, TEXT(";"), false);
+	//*parsed[2].Replace(TEXT(","), TEXT("."));
 	//*parsed[3].Replace(TEXT(","), TEXT("."));
 	AActor* parentActor = GetOwner();
 	FVector position = FVector(FCString::Atof(*parsed[2]), FCString::Atof(*parsed[3]), FCString::Atof(*parsed[4]));
