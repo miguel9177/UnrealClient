@@ -90,13 +90,21 @@ void UNetworkGameObject::FromPacket(FString packet) { //returns global id
 	packet = packet.Replace(TEXT(","), TEXT("."));
 	TArray<FString> parsed;
 	packet.ParseIntoArray(parsed, TEXT(";"), false);
-	//*parsed[3].Replace(TEXT(","), TEXT("."));
-	AActor* parentActor = GetOwner();
-	FVector position = FVector(FCString::Atof(*parsed[2]), FCString::Atof(*parsed[3]), FCString::Atof(*parsed[4]));
-	FQuat rotation = FQuat(FCString::Atof(*parsed[5]), FCString::Atof(*parsed[6]), FCString::Atof(*parsed[7]), FCString::Atof(*parsed[8]));
-	parentActor->SetActorLocation(position);
-	parentActor->SetActorRotation(rotation);
-
+	
+	if (parsed.Num() == 10)
+	{
+		//*parsed[3].Replace(TEXT(","), TEXT("."));
+		AActor* parentActor = GetOwner();
+		FVector position = FVector(FCString::Atof(*parsed[2]), FCString::Atof(*parsed[3]), FCString::Atof(*parsed[4]));
+		FQuat rotation = FQuat(FCString::Atof(*parsed[5]), FCString::Atof(*parsed[6]), FCString::Atof(*parsed[7]), FCString::Atof(*parsed[8]));
+		parentActor->SetActorLocation(position);
+		parentActor->SetActorRotation(rotation);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("bad packet data recieved"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Bad Packet Data REceived: ");
+	}
 }
 
 

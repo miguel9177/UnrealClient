@@ -120,7 +120,6 @@ void ANetManager::Listen()
 {
 	TSharedRef<FInternetAddr> targetAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
 	uint32 Size;
-	//TODO: FIX INFINITE LOOP BUG
 	while (Socket->HasPendingData(Size))
 	{
 		uint8* Recv = new uint8[Size];
