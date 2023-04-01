@@ -86,7 +86,8 @@ int32 UNetworkGameObject::GlobalIDFromPacket(FString packet) {
 	return FCString::Atoi(*parsed[1]);
 }
 
-void UNetworkGameObject::FromPacket(FString packet) { //returns global id
+void UNetworkGameObject::FromPacket(FString packet) 
+{ 
 	packet = packet.Replace(TEXT(","), TEXT("."));
 	TArray<FString> parsed;
 	packet.ParseIntoArray(parsed, TEXT(";"), false);

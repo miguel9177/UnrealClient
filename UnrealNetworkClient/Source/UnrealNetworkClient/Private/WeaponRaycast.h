@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "WeaponRaycast.generated.h"
 
-class UCharacterHealth;
+class UNetworkGameObject;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UWeaponRaycast : public UActorComponent
 {
@@ -14,8 +14,9 @@ class UWeaponRaycast : public UActorComponent
 
 	UPROPERTY(EditAnywhere)
 	float amountOfDamageToGivePerShot = 10;
+	UPROPERTY(EditAnywhere)
+	FString nameOfWeapon = "Raycast Weapon";
 
-	APlayerController* myPlayerController;
 public:	
 	// Sets default values for this component's properties
 	UWeaponRaycast();
@@ -25,7 +26,7 @@ protected:
 	virtual void BeginPlay() override;
 	void SetupInputs(UInputComponent* playerInput);
 	void FireButtonClicked();
-	UCharacterHealth* FireRaycast();
+	UNetworkGameObject* FireRaycast();
 
 public:	
 	// Called every frame

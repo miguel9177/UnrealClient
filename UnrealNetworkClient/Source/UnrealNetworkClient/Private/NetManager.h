@@ -19,9 +19,8 @@ public:
 	ANetManager();
 	~ANetManager();
 
-	static TArray<UNetworkGameObject*> localNetObjects; //this line here!
+	static TArray<UNetworkGameObject*> localNetObjects;
 	static float timePastSinceBeginPlay;
-	//declare a bunch of variables we’ll be using in the .cpp. Normally you’d switch back to the header file and add as you go, but we’ll define them up-front.
 
 	//notice the similarity in the types with the C# implementation. Primarily, we need a socket and endpoints, and arrays for data
 	FSocket* Socket;
@@ -38,7 +37,7 @@ public:
 	FIPv4Address RemoteAddress;
 	uint16 RemotePort = 9050;
 	int32 BufferSize;
-	FString IP = "10.1.7.94";
+	FString IP = "127.0.0.1";
 
 	ISocketSubsystem* SocketSubsystem;
 
@@ -63,5 +62,11 @@ public:
 	void messageQueue();
 
 	void AddNetObject(UNetworkGameObject* component);
+
+#pragma region Network Events
+
+	void AnEnemyPlayerWasShotByUs(UNetworkGameObject* characterWeHit, FString nameOfWeapon);
+
+#pragma endregion
 
 };

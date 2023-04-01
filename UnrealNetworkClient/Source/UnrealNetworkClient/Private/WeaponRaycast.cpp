@@ -6,7 +6,9 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/PlayerController.h"
-#include "CharacterHealth.h"
+#include "NetworkGameObject.h"
+#include "NetManager.h"
+#include "GameManager.h"
 
 // Sets default values for this component's properties
 UWeaponRaycast::UWeaponRaycast()
@@ -24,28 +26,24 @@ void UWeaponRaycast::BeginPlay()
 {
 	Super::BeginPlay();
 
-    //this gets the player controller, so that i can access its vieport
-    myPlayerController = GetWorld()->GetFirstPlayerController();
-
-    if (myPlayerController)
-        SetupInputs(myPlayerController->InputComponent);
+    if(AGameManager::GetInstance()->GetOurPlayerController() != nullptr)
+        SetupInputs(AGameManager::GetInstance()->GetOurPlayerController()->InputComponent);
 }
 
 void UWeaponRaycast::SetupInputs(UInputComponent* playerInput)
 {
     if (playerInput)
         playerInput->BindAction("Fire", IE_Pressed, this, &UWeaponRaycast::FireButtonClicked);
-    
 }
 
 void UWeaponRaycast::FireButtonClicked()
 {
-    UCharacterHealth* characterHealthHit = FireRaycast();
+    UNetworkGameObject* characterWeHit = FireRaycast();
 
-    if (characterHealthHit == nullptr)
+    if (characterWeHit == nullptr)
         return;
 
-    characterHealthHit->TakeDamage(amountOfDamageToGivePerShot);
+    ANetManager::singleton->AnEnemyPlayerWasShotByUs(characterWeHit, nameOfWeapon);
 }
 
 // Called every frame
@@ -56,15 +54,15 @@ void UWeaponRaycast::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	// ...
 }
 
-UCharacterHealth* UWeaponRaycast::FireRaycast()
+UNetworkGameObject* UWeaponRaycast::FireRaycast()
 {
-    if (!myPlayerController) 
+    if (!AGameManager::GetInstance()->GetOurPlayerController()) 
         return nullptr;
 
     //this gets the player vieport
     FVector playerPos;
     FRotator playerRot;
-    myPlayerController->GetPlayerViewPoint(playerPos, playerRot);
+    AGameManager::GetInstance()->GetOurPlayerController()->GetPlayerViewPoint(playerPos, playerRot);
 
     //get a vector at the end of raycast, in this case, character look duration *1000 of distance
     FVector raycastEndPos = playerPos + playerRot.Vector() * 10000.0f; 
@@ -76,18 +74,21 @@ UCharacterHealth* UWeaponRaycast::FireRaycast()
     //draws a line for debugging purposes
     DrawDebugLine(GetWorld(), playerPos, raycastEndPos, FColor::Red, false, 2.0f, 0, 3.0f);
 
-    // Check if the raycast hit something
+    //if we didnt hit anything, we leave
     if (!hasHit)
         return nullptr;
 
     //this will get the charcter that it hit
     AActor* hitActor = hit.GetActor();
+    //if no character we leave
     if (!hitActor)
         return nullptr;
         
-    UCharacterHealth* hitHealthComponent = Cast<UCharacterHealth>(hitActor->GetComponentByClass(UCharacterHealth::StaticClass()));;    
-    if (hitHealthComponent)
-        return hitHealthComponent;
+    //we get the character network game object script from the actor we hit
+    UNetworkGameObject* hitNetworkGameObjectComponent = Cast<UNetworkGameObject>(hitActor->GetComponentByClass(UNetworkGameObject::StaticClass()));;
+    //if theres an hit script we reduce its life
+    if (hitNetworkGameObjectComponent)
+        return hitNetworkGameObjectComponent;
 
     return nullptr;
 }

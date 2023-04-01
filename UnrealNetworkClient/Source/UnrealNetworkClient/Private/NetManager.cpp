@@ -3,6 +3,7 @@
 
 #include "NetManager.h"
 #include <string>
+#include "GameManager.h"
 
 TArray<UNetworkGameObject*> ANetManager::localNetObjects;
 ANetManager* ANetManager::singleton; //declare the pointer
@@ -102,7 +103,8 @@ void ANetManager::Tick(float DeltaTime)
 			netObject->requestedIdInfo.requestedId = true;
 			netObject->requestedIdInfo.timeIdWasRequested = timePastSinceBeginPlay;
 		}
-		if (netObject->GetIsLocallyOwned() && netObject->GetGlobalID() != 0) {
+		if (netObject->GetIsLocallyOwned() && netObject->GetGlobalID() != 0) 
+		{
 			UE_LOG(LogTemp, Warning, TEXT("Sending: %s"), *netObject->ToPacket());
 			sendMessage(netObject->ToPacket());
 		}
@@ -229,4 +231,16 @@ void ANetManager::AddNetObject(UNetworkGameObject* component) {
 		component->requestedIdInfo.requestedId = true;
 	}
 }
+
+#pragma region Network Events
+
+//this is called when we shot a player with our gun
+void ANetManager::AnEnemyPlayerWasShotByUs(UNetworkGameObject* characterWeHit, FString nameOfWeapon)
+{
+	FString enemyPlayerHitMessage = "GameplayEvent: Player shot another player: Player with id;" + FString::FromInt(AGameManager::GetInstance()->GetOurPlayerNetworkGameObject()->GetGlobalID()) + "; shot player with id; " + FString::FromInt(characterWeHit->GetGlobalID()) + "; with weapon;" + nameOfWeapon;
+	sendMessage(enemyPlayerHitMessage);
+}
+
+#pragma endregion
+
 
