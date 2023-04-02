@@ -86,7 +86,7 @@ UNetworkGameObject* UWeaponRaycast::FireRaycast()
     AGameManager::GetInstance()->GetOurPlayerController()->GetPlayerViewPoint(playerPos, playerRot);
 
     //get a vector at the end of raycast, in this case, character look duration *1000 of distance
-    FVector raycastEndPos = playerPos + playerRot.Vector() * 10000.0f; 
+    FVector raycastEndPos = playerPos + playerRot.Vector() * weaponRange; 
 
     //this will get the hit result
     FHitResult hit;
@@ -94,7 +94,7 @@ UNetworkGameObject* UWeaponRaycast::FireRaycast()
 
     //draws a line for debugging purposes
     DrawDebugLine(GetWorld(), playerPos, raycastEndPos, FColor::Red, false, 2.0f, 0, 3.0f);
-
+    
     //if we didnt hit anything, we leave
     if (!hasHit)
         return nullptr;

@@ -17,7 +17,7 @@ class UWeaponRaycast : public UActorComponent
 	UPROPERTY(EditAnywhere)
 	FString nameOfWeapon = "Raycast Weapon";
 	UPROPERTY(EditAnywhere)
-	float weaponRange = 10000;
+	float weaponRange = 1000;
 
 public:	
 	// Sets default values for this component's properties

@@ -39,15 +39,15 @@ void UWeaponRaycast::SetupInputs(UInputComponent* playerInput)
 
 void UWeaponRaycast::FireButtonClicked()
 {
- /*   UNetworkGameObject* characterWeHit = FireRaycast();
+    UNetworkGameObject* characterWeHit = FireRaycast();
 
     if (characterWeHit == nullptr)
         return;
 
-    ANetManager::singleton->AnEnemyPlayerWasShotByUs(characterWeHit, nameOfWeapon);*/
-    // Get all actors with the UNetworkGameObject component
+    ANetManager::singleton->AnEnemyPlayerWasShotByUs(characterWeHit, nameOfWeapon);
 
-    TArray<AActor*> FoundActors;
+    // Get all actors with the UNetworkGameObject component
+    /*TArray<AActor*> FoundActors;
     TArray<UNetworkGameObject*> networkGameObjects;
 
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), FoundActors);
@@ -64,7 +64,7 @@ void UWeaponRaycast::FireButtonClicked()
     if (networkGameObjects.Num() > 1)
     {
         ANetManager::singleton->AnEnemyPlayerWasShotByUs(networkGameObjects[1], nameOfWeapon);
-    }
+    }*/
 }
 
 // Called every frame
@@ -86,15 +86,16 @@ UNetworkGameObject* UWeaponRaycast::FireRaycast()
     AGameManager::GetInstance()->GetOurPlayerController()->GetPlayerViewPoint(playerPos, playerRot);
 
     //get a vector at the end of raycast, in this case, character look duration *1000 of distance
-    FVector raycastEndPos = playerPos + playerRot.Vector() * 10000.0f; 
+    FVector raycastEndPos = playerPos + playerRot.Vector() * weaponRange; 
 
     //this will get the hit result
     FHitResult hit;
     bool hasHit = GetWorld()->LineTraceSingleByChannel(hit, playerPos, raycastEndPos, ECollisionChannel::ECC_Visibility);
 
     //draws a line for debugging purposes
-    DrawDebugLine(GetWorld(), playerPos, raycastEndPos, FColor::Red, false, 2.0f, 0, 3.0f);
-
+    FColor color = hasHit ? FColor::Red : FColor::Green;
+    DrawDebugLine(GetWorld(), playerPos, raycastEndPos, color , false, 2.0f, 0, 3.0f);
+    
     //if we didnt hit anything, we leave
     if (!hasHit)
         return nullptr;
