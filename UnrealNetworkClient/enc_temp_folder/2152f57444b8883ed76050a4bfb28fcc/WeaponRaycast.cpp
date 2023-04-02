@@ -9,6 +9,7 @@
 #include "NetworkGameObject.h"
 #include "NetManager.h"
 #include "GameManager.h"
+#include "GameFramework/Character.h"
 
 // Sets default values for this component's properties
 UWeaponRaycast::UWeaponRaycast()
@@ -38,12 +39,32 @@ void UWeaponRaycast::SetupInputs(UInputComponent* playerInput)
 
 void UWeaponRaycast::FireButtonClicked()
 {
-    UNetworkGameObject* characterWeHit = FireRaycast();
+ /*   UNetworkGameObject* characterWeHit = FireRaycast();
 
     if (characterWeHit == nullptr)
         return;
 
-    ANetManager::singleton->AnEnemyPlayerWasShotByUs(characterWeHit, nameOfWeapon);
+    ANetManager::singleton->AnEnemyPlayerWasShotByUs(characterWeHit, nameOfWeapon);*/
+    // Get all actors with the UNetworkGameObject component
+
+    TArray<AActor*> FoundActors;
+    TArray<UNetworkGameObject*> networkGameObjects;
+
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), FoundActors);
+
+    for (AActor* Actor : FoundActors)
+    {
+        UNetworkGameObject* NetworkGameObject = Cast<UNetworkGameObject>(Actor->GetComponentByClass(UNetworkGameObject::StaticClass()));
+        if (NetworkGameObject)
+        {
+            networkGameObjects.Add(NetworkGameObject);
+        }
+    }
+
+    if (networkGameObjects.Num() > 1)
+    {
+        ANetManager::singleton->AnEnemyPlayerWasShotByUs(networkGameObjects[1], nameOfWeapon);
+    }
 }
 
 // Called every frame
