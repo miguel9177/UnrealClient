@@ -17,6 +17,8 @@ class UNetworkGameObject : public UActorComponent
 	int32 globalId;
 	UPROPERTY(VisibleAnywhere)
 	int32 localId;
+	UPROPERTY(VisibleAnywhere)
+	float hp;
 
 	struct RequestedId 
 	{

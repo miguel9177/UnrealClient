@@ -100,6 +100,7 @@ void UNetworkGameObject::FromPacket(FString packet)
 		FQuat rotation = FQuat(FCString::Atof(*parsed[5]), FCString::Atof(*parsed[6]), FCString::Atof(*parsed[7]), FCString::Atof(*parsed[8]));
 		parentActor->SetActorLocation(position);
 		parentActor->SetActorRotation(rotation);
+		hp = FCString::Atof(*parsed[9]);
 	}
 	else
 	{
