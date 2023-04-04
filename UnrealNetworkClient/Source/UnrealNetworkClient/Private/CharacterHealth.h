@@ -4,16 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "HUDPlayerHp.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/TextRenderComponent.h"
 #include "CharacterHealth.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UCharacterHealth : public UActorComponent
 {
 	GENERATED_BODY()
-	UPROPERTY(EditAnywhere)
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterAmountOfHealth")
 	float amountOfHealth = 100;
-public:	
+
+
+#pragma region UI
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UIHpText")
+		UTextRenderComponent* hpTextRenderer;
+
+#pragma endregion
+
+
 	// Sets default values for this component's properties
 	UCharacterHealth();
 
@@ -26,4 +39,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void TakeDamage(float _amountOfDamageToTake);
+
+	UFUNCTION(BlueprintCallable, Category = "GetAmountOfHealth")
+	float GetAmountOfHealth();
 };

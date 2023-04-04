@@ -9,7 +9,7 @@ UCharacterHealth::UCharacterHealth()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	amountOfHealth = 100;
 	// ...
 }
 
@@ -19,7 +19,10 @@ void UCharacterHealth::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	if (hpTextRenderer)
+	{
+		hpTextRenderer->SetText(FText::FromString("Your new text here"));
+	}
 	
 }
 
@@ -35,5 +38,10 @@ void UCharacterHealth::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UCharacterHealth::TakeDamage(float _amountOfDamageToTake)
 {
 	amountOfHealth -= _amountOfDamageToTake;
+}
+
+float UCharacterHealth::GetAmountOfHealth()
+{
+	return amountOfHealth;
 }
 
