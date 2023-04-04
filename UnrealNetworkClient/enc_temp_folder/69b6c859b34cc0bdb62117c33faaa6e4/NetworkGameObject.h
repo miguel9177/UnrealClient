@@ -7,8 +7,7 @@
 #include "NetworkGameObject.generated.h"
 
 
-class UCharacterHealth;
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UNetworkGameObject : public UActorComponent
 {
 	GENERATED_BODY() //up to here code should be the same
@@ -20,7 +19,6 @@ class UNetworkGameObject : public UActorComponent
 	int32 localId;
 	UPROPERTY(VisibleAnywhere)
 	float hp;
-	UCharacterHealth* characterHpScript;
 
 	struct RequestedId 
 	{

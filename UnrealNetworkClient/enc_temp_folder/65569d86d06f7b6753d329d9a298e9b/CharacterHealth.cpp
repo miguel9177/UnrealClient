@@ -45,8 +45,3 @@ float UCharacterHealth::GetAmountOfHealth()
 	return amountOfHealth;
 }
 
-void UCharacterHealth::SetAmountOfHealth(float hp_)
-{
-	amountOfHealth = hp_;
-}
-

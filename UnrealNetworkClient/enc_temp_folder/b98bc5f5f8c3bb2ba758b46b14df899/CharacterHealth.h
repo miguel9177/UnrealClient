@@ -42,5 +42,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GetAmountOfHealth")
 	float GetAmountOfHealth();
-	void SetAmountOfHealth(float hp_);
 };

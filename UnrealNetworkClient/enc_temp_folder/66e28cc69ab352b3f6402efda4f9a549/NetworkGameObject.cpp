@@ -3,8 +3,6 @@
 
 #include "NetworkGameObject.h"
 #include "NetManager.h"
-#include "CharacterHealth.h"
-
 int32 UNetworkGameObject::lastLocalID = 0;
 
 // Sets default values for this component's properties
@@ -24,21 +22,12 @@ void UNetworkGameObject::BeginPlay()
 {
 	ANetManager::singleton->AddNetObject(this); //calls the above method on the singleton network manager
 	Super::BeginPlay();
-
 	if (isLocallyOwned) {
 		localId = lastLocalID;
 		lastLocalID++;
 		
 	}	
 
-	if (GetOwner())
-	{
-		characterHpScript = GetOwner()->FindComponentByClass<UCharacterHealth>();
-		if (!characterHpScript)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("UCharacterHealth was not found!"));
-		}
-	}
 
 	UE_LOG(LogTemp, Warning, TEXT("count: %d"), ANetManager::localNetObjects.Num());
 }
@@ -112,7 +101,6 @@ void UNetworkGameObject::FromPacket(FString packet)
 		parentActor->SetActorLocation(position);
 		parentActor->SetActorRotation(rotation);
 		hp = FCString::Atof(*parsed[9]);
-		characterHpScript->SetAmountOfHealth(hp);
 	}
 	else
 	{
