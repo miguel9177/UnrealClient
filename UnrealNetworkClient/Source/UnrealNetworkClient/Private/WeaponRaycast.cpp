@@ -26,26 +26,30 @@ UWeaponRaycast::UWeaponRaycast()
 void UWeaponRaycast::BeginPlay()
 {
 	Super::BeginPlay();
-
+    //if the player is not null
     if(AGameManager::GetInstance()->GetOurPlayerController() != nullptr)
-        SetupInputs(AGameManager::GetInstance()->GetOurPlayerController()->InputComponent);
+        SetupInputs(AGameManager::GetInstance()->GetOurPlayerController()->InputComponent);//this sets inputs of the character
 }
 
+//this sets the inputs for the character
 void UWeaponRaycast::SetupInputs(UInputComponent* playerInput)
 {
+    //if we do have a player input
     if (playerInput)
-        playerInput->BindAction("Fire", IE_Pressed, this, &UWeaponRaycast::FireButtonClicked);
+        playerInput->BindAction("Fire", IE_Pressed, this, &UWeaponRaycast::FireButtonClicked);//we bind the fire action to the function fire button pressed
 }
 
 void UWeaponRaycast::FireButtonClicked()
 {
+    //this fires the raycast and gets the character that we hit
     UNetworkGameObject* characterWeHit = FireRaycast();
-
+    //if the character that we wit is null we leave
     if (characterWeHit == nullptr)
         return;
-
+    //this tells the net manager we shot an enemy
     ANetManager::singleton->AnEnemyPlayerWasShotByUs(characterWeHit, nameOfWeapon);
 
+    //THIS COMENTED CODE LETS US CHEAT FOR TESTING THE ANTI CHEAT
     // Get all actors with the UNetworkGameObject component
     /*TArray<AActor*> FoundActors;
     TArray<UNetworkGameObject*> networkGameObjects;

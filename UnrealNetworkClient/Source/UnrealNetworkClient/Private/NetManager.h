@@ -13,14 +13,17 @@ class ANetManager : public AActor
 {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> OtherPlayerAvatars;
+	TSubclassOf<AActor> OtherPlayerAvatars; //this stores the avatar of the other player
 
 public:
 	ANetManager();
 	~ANetManager();
 
+	//this stores all local objects
 	static TArray<UNetworkGameObject*> localNetObjects;
+	//this stores the time past since begin play so that we can send the uid again if for some reason it didnt work
 	static float timePastSinceBeginPlay;
+	//this stores the timepast since we send an message, so that we can add a lag to the sending
 	float timePastSinceSend = 0;
 
 	//notice the similarity in the types with the C# implementation. Primarily, we need a socket and endpoints, and arrays for data
@@ -52,21 +55,21 @@ protected:
 public:
 	static ANetManager* singleton; //declare the class to contain a pointer to an instance of itself
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override; 
 
-	void Listen();
+	void Listen(); 
 
-	//we’ll think about blueprint integration later, but this is the starting bit
+	
 	UFUNCTION(BlueprintCallable, Category = "UDPNetworking")
-		bool sendMessage(FString Message);
+		bool sendMessage(FString Message);//this sends the messages
 
-	void messageQueue();
+	void messageQueue(); //this currently isnt used
 
-	void AddNetObject(UNetworkGameObject* component);
+	void AddNetObject(UNetworkGameObject* component);//this adds a new net object to the game
 
 #pragma region Network Events
 
-	void AnEnemyPlayerWasShotByUs(UNetworkGameObject* characterWeHit, FString nameOfWeapon);
+	void AnEnemyPlayerWasShotByUs(UNetworkGameObject* characterWeHit, FString nameOfWeapon); //this is called when we shot another player
 
 #pragma endregion
 

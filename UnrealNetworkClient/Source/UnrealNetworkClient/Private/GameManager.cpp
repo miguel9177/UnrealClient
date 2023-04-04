@@ -8,16 +8,18 @@
 
 AGameManager* AGameManager::instance;
 
-// Sets default values
+//constructor
 AGameManager::AGameManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+    //this initializes the instance variable, since this is a singleton
     instance = this;
 }
 
+//we do the get mandatory get instance code for a singleton
 AGameManager* AGameManager::GetInstance()
 {
+    //if theres no instance we create a new one
     if (!instance)
     {
         instance = NewObject<AGameManager>();
@@ -71,11 +73,13 @@ void AGameManager::Tick(float DeltaTime)
 
 #pragma region Getters
 
+//this returns our player network gameobject
 UNetworkGameObject* AGameManager::GetOurPlayerNetworkGameObject()
 {
     return ourPlayerNetworkGameObject;
 }
 
+//this returns our player controller
 APlayerController* AGameManager::GetOurPlayerController()
 {
     return ourPlayerController;
