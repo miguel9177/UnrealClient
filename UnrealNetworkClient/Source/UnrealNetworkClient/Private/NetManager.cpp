@@ -92,6 +92,7 @@ void ANetManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	//Super::Tick(DeltaTime);
 	timePastSinceBeginPlay += DeltaTime;
+	timePastSinceSend += DeltaTime;
 
 	for (UNetworkGameObject* netObject : ANetManager::localNetObjects) 
 	{
@@ -105,8 +106,12 @@ void ANetManager::Tick(float DeltaTime)
 		}
 		if (netObject->GetIsLocallyOwned() && netObject->GetGlobalID() != 0) 
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Sending: %s"), *netObject->ToPacket());
-			sendMessage(netObject->ToPacket());
+			if (timePastSinceSend > 0.5f)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Sending: %s"), *netObject->ToPacket());
+				sendMessage(netObject->ToPacket());
+				timePastSinceSend = 0;
+			}
 		}
 	}
 
@@ -177,6 +182,10 @@ void ANetManager::Listen()
 				if (netObject->GetGlobalID() == netObject->GlobalIDFromPacket(data)) {
 					if (!netObject->GetIsLocallyOwned()) {
 						netObject->FromPacket(data);
+					}
+					else
+					{
+						netObject->UpdateHpFromPacket(data);
 					}
 					foundActor = true;
 				}

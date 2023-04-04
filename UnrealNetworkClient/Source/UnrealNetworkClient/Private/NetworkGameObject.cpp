@@ -121,4 +121,23 @@ void UNetworkGameObject::FromPacket(FString packet)
 	}
 }
 
+void UNetworkGameObject::UpdateHpFromPacket(FString packet)
+{
+	packet = packet.Replace(TEXT(","), TEXT("."));
+	TArray<FString> parsed;
+	packet.ParseIntoArray(parsed, TEXT(";"), false);
+
+	if (parsed.Num() == 10)
+	{
+		//*parsed[3].Replace(TEXT(","), TEXT("."));
+		hp = FCString::Atof(*parsed[9]);
+		characterHpScript->SetAmountOfHealth(hp);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("bad packet data recieved"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Bad Packet Data REceived: ");
+	}
+}
+
 

@@ -40,6 +40,7 @@ public:
 	void SetGlobalID(int32 gId);
 	void SetLocalID(int32 lId);
 	void FromPacket(FString packet);
+	void UpdateHpFromPacket(FString packet);
 	FString ToPacket();
 	int32 GlobalIDFromPacket(FString packet);
 

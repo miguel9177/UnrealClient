@@ -21,6 +21,7 @@ public:
 
 	static TArray<UNetworkGameObject*> localNetObjects;
 	static float timePastSinceBeginPlay;
+	float timePastSinceSend = 0;
 
 	//notice the similarity in the types with the C# implementation. Primarily, we need a socket and endpoints, and arrays for data
 	FSocket* Socket;
